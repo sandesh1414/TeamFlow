@@ -5,10 +5,13 @@ import { useAuth } from '../context/AuthContext';
 const JoinTeamModal = ({ onClose, onTeamJoined }) => {
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   const handleJoin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const { data } = await axios.post('/api/teams/join', { inviteCode }, config);
@@ -16,22 +19,47 @@ const JoinTeamModal = ({ onClose, onTeamJoined }) => {
       onClose();
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid invite code');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={onClose}>
-      <div style={{ background: 'white', padding: '32px', borderRadius: '14px', width: '360px' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ marginBottom: '20px' }}>Join a Team</h2>
-        {error && <p style={{ color: 'red', marginBottom: '12px', fontSize: '13px' }}>{error}</p>}
-        <form onSubmit={handleJoin}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600' }}>Invite Code</label>
-            <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value.toUpperCase())} placeholder="e.g. A3F9BC" maxLength={6} required style={{ display: 'block', width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '4px', fontSize: '22px', letterSpacing: '6px', textAlign: 'center', boxSizing: 'border-box' }} />
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal slide-up" style={{ width: '400px', padding: '30px' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h2 style={{ fontSize: '20px', marginBottom: '3px' }}>Join a team</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Enter the 6-character invite code</p>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="submit" style={{ flex: 1, padding: '10px', background: '#6c63ff', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Join</button>
-            <button type="button" onClick={onClose} style={{ flex: 1, padding: '10px', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+          <button className="btn-icon" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+
+        {error && <div style={{ color: 'var(--error-text)', background: 'var(--error-bg)', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
+
+        <form onSubmit={handleJoin}>
+          <div style={{ marginBottom: '22px' }}>
+            <label className="label">Invite code</label>
+            <input
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              placeholder="A3F9BC"
+              maxLength={6}
+              required
+              autoFocus
+              className="field"
+              style={{
+                display: 'block', width: '100%', padding: '16px',
+                borderRadius: 'var(--r-md)', border: '2px dashed var(--primary-softer)',
+                marginTop: '4px', fontSize: '26px', letterSpacing: '10px', textAlign: 'center',
+                fontWeight: 700, color: 'var(--primary)', boxSizing: 'border-box', outline: 'none',
+                background: 'var(--primary-soft)',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={loading}>{loading ? 'Joining…' : 'Join team'}</button>
+            <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

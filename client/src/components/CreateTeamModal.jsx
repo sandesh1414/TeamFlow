@@ -6,10 +6,13 @@ const CreateTeamModal = ({ onClose, onTeamCreated }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const { data } = await axios.post('/api/teams/create', { name, description }, config);
@@ -17,26 +20,38 @@ const CreateTeamModal = ({ onClose, onTeamCreated }) => {
       onClose();
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const inputStyle = { display: 'block', width: '100%', padding: '11px 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', marginTop: '4px', fontSize: '14px', boxSizing: 'border-box', outline: 'none' };
+
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={onClose}>
-      <div style={{ background: 'white', padding: '32px', borderRadius: '14px', width: '420px' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ marginBottom: '20px' }}>Create a Team</h2>
-        {error && <p style={{ color: 'red', marginBottom: '12px', fontSize: '13px' }}>{error}</p>}
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal slide-up" style={{ width: '460px', padding: '30px' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h2 style={{ fontSize: '20px', marginBottom: '3px' }}>Create a team</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Set up a new workspace for your crew</p>
+          </div>
+          <button className="btn-icon" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+
+        {error && <div style={{ color: 'var(--error-text)', background: 'var(--error-bg)', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
+
         <form onSubmit={handleCreate}>
-          <div style={{ marginBottom: '14px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600' }}>Team Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} required style={{ display: 'block', width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+          <div style={{ marginBottom: '16px' }}>
+            <label className="label">Team name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Design Studio" required className="field" style={inputStyle} />
           </div>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600' }}>Description (optional)</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={{ display: 'block', width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '4px', fontSize: '14px', boxSizing: 'border-box', minHeight: '80px', resize: 'vertical' }} />
+          <div style={{ marginBottom: '22px' }}>
+            <label className="label">Description <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>(optional)</span></label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="field" style={{ ...inputStyle, minHeight: '78px', resize: 'vertical' }} placeholder="What's this team working on?" />
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="submit" style={{ flex: 1, padding: '10px', background: '#6c63ff', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Create</button>
-            <button type="button" onClick={onClose} style={{ flex: 1, padding: '10px', border: '1px solid #ddd', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={loading}>{loading ? 'Creating…' : 'Create team'}</button>
+            <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

@@ -1,18 +1,13 @@
-const PRIORITY_COLORS = {
-  low:    { bg: '#e8f5e9', text: '#2e7d32', border: '#4caf50' },
-  medium: { bg: '#fff8e1', text: '#f57f17', border: '#ffb300' },
-  high:   { bg: '#fce4ec', text: '#c62828', border: '#e53935' },
-  urgent: { bg: '#f3e5f5', text: '#6a1b9a', border: '#8e24aa' },
-};
+import { priorityStyles } from '../styles/theme';
 
 const TaskCard = ({ task, onClick }) => {
-  const priority = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium;
+  const priority = priorityStyles[task.priority] || priorityStyles.medium;
 
   const formatDue = (date) => {
     if (!date) return null;
     const d = new Date(date);
     const isOverdue = d < new Date() && task.status !== 'done';
-    return { label: d.toLocaleDateString(), overdue: isOverdue };
+    return { label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }), overdue: isOverdue };
   };
 
   const due = formatDue(task.dueDate);
@@ -20,32 +15,31 @@ const TaskCard = ({ task, onClick }) => {
   return (
     <div
       onClick={onClick}
-      style={{ background: 'white', borderRadius: '10px', padding: '14px', marginBottom: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', cursor: 'pointer', borderLeft: `4px solid ${priority.border}`, transition: 'box-shadow 0.2s' }}
-      onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'}
-      onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)'}
+      className="card card-hover"
+      style={{ padding: '14px', marginBottom: '10px', cursor: 'pointer', borderLeft: `4px solid ${priority.border}` }}
     >
-      <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', background: priority.bg, color: priority.text }}>
+      <span className="badge" style={{ background: priority.bg, color: priority.text }}>
         {task.priority.toUpperCase()}
       </span>
-      <p style={{ margin: '8px 0 8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>{task.title}</p>
+      <p style={{ margin: '9px 0 10px', fontWeight: 600, fontSize: '14px', color: 'var(--text)', lineHeight: 1.4 }}>{task.title}</p>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {task.assignedTo ? (
-          <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: '#6c63ff', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 'bold' }} title={task.assignedTo.name}>
+          <span className="avatar" title={task.assignedTo.name} style={{ width: '26px', height: '26px', fontSize: '11px', background: 'linear-gradient(135deg, var(--primary), #3b82f6)' }}>
             {task.assignedTo.name?.[0]?.toUpperCase()}
-          </div>
+          </span>
         ) : (
-          <span style={{ fontSize: '11px', color: '#bbb' }}>Unassigned</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>Unassigned</span>
         )}
         {due && (
-          <span style={{ fontSize: '11px', color: due.overdue ? '#e53935' : '#999', fontWeight: due.overdue ? '600' : '400' }}>
-            {due.overdue ? '⚠ ' : ''}{due.label}
+          <span style={{ fontSize: '11px', color: due.overdue ? 'var(--error-text)' : 'var(--text-muted)', fontWeight: due.overdue ? 700 : 500, display: 'flex', alignItems: 'center', gap: '3px' }}>
+            {due.overdue && <span>⚠</span>}{due.label}
           </span>
         )}
       </div>
-      {task.comments?.length > 0 && (
-        <div style={{ marginTop: '8px', fontSize: '11px', color: '#bbb' }}>
-          💬 {task.comments.length} comment{task.comments.length !== 1 ? 's' : ''}
-          {task.attachments?.length > 0 && ` · 📎 ${task.attachments.length}`}
+      {(task.comments?.length > 0 || task.attachments?.length > 0) && (
+        <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-soft)', fontSize: '11px', color: 'var(--text-faint)', display: 'flex', gap: '12px' }}>
+          {task.comments?.length > 0 && <span>💬 {task.comments.length}</span>}
+          {task.attachments?.length > 0 && <span>📎 {task.attachments.length}</span>}
         </div>
       )}
     </div>

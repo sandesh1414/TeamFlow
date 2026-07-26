@@ -17,9 +17,7 @@ const ChatRoom = ({ teamId }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, {
-      auth: { token: user.token },
-    });
+    const socket = io(SOCKET_URL, { auth: { token: user.token } });
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -29,15 +27,10 @@ const ChatRoom = ({ teamId }) => {
     socket.on('disconnect', () => setConnected(false));
 
     socket.on('message_history', (history) => setMessages(history));
-
-    socket.on('receive_message', (message) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
+    socket.on('receive_message', (message) => setMessages((prev) => [...prev, message]));
     socket.on('user_typing', ({ name }) => setTypingUser(name));
     socket.on('user_stop_typing', () => setTypingUser(''));
 
-    // Assistant thinking placeholder
     socket.on('assistant_thinking', ({ thinkingId }) => {
       setMessages((prev) => [
         ...prev,
@@ -45,7 +38,6 @@ const ChatRoom = ({ teamId }) => {
       ]);
     });
 
-    // Replace thinking placeholder with real response
     socket.on('assistant_response', ({ thinkingId, message }) => {
       setMessages((prev) => prev.map((m) => (m._id === thinkingId ? message : m)));
     });
@@ -55,7 +47,6 @@ const ChatRoom = ({ teamId }) => {
     return () => socket.disconnect();
   }, [teamId]);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -89,9 +80,8 @@ const ChatRoom = ({ teamId }) => {
     });
   };
 
-  const formatTime = (dateStr) => {
-    return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  const formatTime = (dateStr) =>
+    new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const isMyMessage = (msg) => {
     const senderId = msg.sender?._id || msg.sender;
@@ -99,23 +89,21 @@ const ChatRoom = ({ teamId }) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '620px', background: '#f8f9fa', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
+    <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '640px', overflow: 'hidden' }}>
 
-      {/* Header */}
-      <div style={{ padding: '14px 20px', background: 'white', borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>💬 Team Chat</h3>
-        <span style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', color: connected ? '#2e7d32' : '#999' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: connected ? '#4caf50' : '#bbb', display: 'inline-block' }} />
-          {connected ? 'Connected' : 'Connecting...'}
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border-soft)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>Team Chat</h3>
+        <span style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', color: connected ? 'var(--success-text)' : 'var(--text-faint)' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: connected ? 'var(--success)' : '#cbd5e1', display: 'inline-block' }} />
+          {connected ? 'Connected' : 'Connecting…'}
         </span>
       </div>
 
-      {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '18px 20px', background: 'var(--bg)' }}>
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#bbb', marginTop: '60px' }}>
-            <p style={{ fontSize: '32px' }}>💬</p>
-            <p>No messages yet. Say hello!</p>
+          <div style={{ textAlign: 'center', color: 'var(--text-faint)', marginTop: '60px' }}>
+            <div style={{ fontSize: '34px', marginBottom: '10px' }}>💬</div>
+            <p style={{ fontSize: '14px' }}>No messages yet. Say hello!</p>
           </div>
         )}
 
@@ -124,58 +112,53 @@ const ChatRoom = ({ teamId }) => {
           const isBot = msg.isBot === true;
 
           return (
-            <div key={msg._id || idx} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
+            <div key={msg._id || idx} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', marginBottom: '12px' }}>
               <div style={{ maxWidth: '72%' }}>
                 {(!mine || isBot) && (
-                  <div style={{ fontSize: '11px', color: isBot ? '#7c3aed' : '#6c63ff', fontWeight: '700', marginBottom: '3px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ fontSize: '11px', color: isBot ? 'var(--ai)' : 'var(--primary)', fontWeight: 700, marginBottom: '4px', paddingLeft: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {isBot && <span>🤖</span>}
                     {msg.sender?.name}
                   </div>
                 )}
 
                 <div style={{
-                  padding: '10px 14px',
-                  borderRadius: mine && !isBot ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  background: isBot ? 'linear-gradient(135deg, #f5f3ff, #fdf4ff)' : mine ? '#6c63ff' : 'white',
-                  color: isBot ? '#4c1d95' : mine ? 'white' : '#333',
-                  boxShadow: isBot ? '0 2px 8px rgba(108,99,255,0.15)' : '0 1px 3px rgba(0,0,0,0.08)',
-                  fontSize: '14px', lineHeight: '1.5',
-                  borderLeft: isBot ? '3px solid #a78bfa' : 'none',
-                  opacity: msg.isThinking ? 0.7 : 1,
+                  padding: '10px 15px',
+                  borderRadius: mine && !isBot ? 'var(--r-lg) var(--r-lg) 4px var(--r-lg)' : 'var(--r-lg) var(--r-lg) var(--r-lg) 4px',
+                  background: isBot ? 'var(--ai-soft)' : mine ? 'var(--primary)' : 'var(--surface)',
+                  color: isBot ? 'var(--ai-text)' : mine ? '#fff' : 'var(--text-body)',
+                  border: isBot ? '1px solid var(--ai-softer)' : mine ? 'none' : '1px solid var(--border)',
+                  boxShadow: 'var(--sh-xs)',
+                  fontSize: '14px', lineHeight: 1.55,
+                  opacity: msg.isThinking ? 0.85 : 1,
                 }}>
                   {msg.isThinking ? (
-                    // Bouncing dots thinking animation
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '2px 4px' }}>
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#a78bfa', animation: `bounce 1s ease-in-out ${i * 0.15}s infinite` }} />
-                      ))}
+                    <div className="dot-typing" style={{ padding: '2px 4px' }}>
+                      {[0, 1, 2].map((i) => <span key={i} style={{ animationDelay: `${i * 0.15}s` }} />)}
                     </div>
                   ) : msg.isFile ? (
-                    // File message
                     <div>
                       {isImage(msg.fileType) ? (
                         <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
-                          <img src={msg.fileUrl} alt={msg.text} style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', display: 'block' }} />
+                          <img src={msg.fileUrl} alt={msg.text} style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: 'var(--r-sm)', display: 'block' }} />
                         </a>
                       ) : (
-                        <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: mine ? 'white' : '#333', textDecoration: 'none' }}>
+                        <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: mine ? '#fff' : 'var(--text-body)', textDecoration: 'none' }}>
                           <span style={{ fontSize: '24px' }}>{getFileIcon(msg.fileType, msg.text)}</span>
                           <div>
-                            <div style={{ fontSize: '13px', fontWeight: '600' }}>{msg.text}</div>
+                            <div style={{ fontSize: '13px', fontWeight: 600 }}>{msg.text}</div>
                             <div style={{ fontSize: '11px', opacity: 0.7 }}>{formatFileSize(msg.fileSize)}</div>
                           </div>
                         </a>
                       )}
                     </div>
                   ) : (
-                    // Regular or bot text message
                     <span style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</span>
                   )}
                 </div>
 
-                <div style={{ fontSize: '10px', color: '#bbb', marginTop: '3px', textAlign: mine && !isBot ? 'right' : 'left', paddingLeft: '4px', paddingRight: '4px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-faint)', marginTop: '4px', textAlign: mine && !isBot ? 'right' : 'left', paddingLeft: '4px', paddingRight: '4px' }}>
                   {formatTime(msg.createdAt)}
-                  {isBot && !msg.isThinking && <span style={{ marginLeft: '4px', color: '#a78bfa' }}>✨ AI</span>}
+                  {isBot && !msg.isThinking && <span style={{ marginLeft: '4px', color: 'var(--ai)', fontWeight: 600 }}>✨ AI</span>}
                 </div>
               </div>
             </div>
@@ -183,40 +166,32 @@ const ChatRoom = ({ teamId }) => {
         })}
 
         {typingUser && (
-          <div style={{ fontSize: '12px', color: '#999', fontStyle: 'italic', padding: '4px 0' }}>
-            {typingUser} is typing...
+          <div style={{ fontSize: '12px', color: 'var(--text-faint)', fontStyle: 'italic', padding: '4px 0' }}>
+            {typingUser} is typing…
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* @assistant hint */}
-      <div style={{ padding: '5px 20px', fontSize: '11px', color: '#bbb', background: 'white', borderTop: '1px solid #f5f5f5' }}>
-        💡 Type <strong style={{ color: '#a78bfa' }}>@assistant</strong> followed by any question about your tasks
+      <div style={{ padding: '6px 20px', fontSize: '11px', color: 'var(--text-faint)', background: 'var(--surface)', borderTop: '1px solid var(--border-soft)' }}>
+        💡 Type <strong style={{ color: 'var(--ai)', fontWeight: 600 }}>@assistant</strong> followed by any question about your tasks
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSend} style={{ padding: '14px 16px', background: 'white', borderTop: '1px solid #e0e0e0', display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <form onSubmit={handleSend} style={{ padding: '14px 18px', background: 'var(--surface)', borderTop: '1px solid var(--border-soft)', display: 'flex', gap: '8px', alignItems: 'center' }}>
         <FileUpload onUploadComplete={handleChatFileUploaded} compact />
         <input
           value={text}
           onChange={handleTyping}
-          placeholder="Type a message..."
-          style={{ flex: 1, padding: '10px 14px', borderRadius: '24px', border: '1px solid #e0e0e0', fontSize: '14px', outline: 'none' }}
+          placeholder="Type a message…"
+          className="field"
+          style={{ flex: 1, padding: '10px 16px', borderRadius: 'var(--r-pill)', border: '1px solid var(--border)' }}
           onBlur={() => socketRef.current?.emit('stop_typing', { teamId })}
         />
-        <button type="submit" disabled={!text.trim()} style={{ padding: '10px 20px', background: text.trim() ? '#6c63ff' : '#e0e0e0', color: text.trim() ? 'white' : '#bbb', border: 'none', borderRadius: '24px', cursor: text.trim() ? 'pointer' : 'default', fontWeight: '600', transition: 'all 0.2s' }}>
+        <button type="submit" disabled={!text.trim()} className="btn btn-primary" style={{ borderRadius: 'var(--r-pill)' }}>
           Send
         </button>
       </form>
-
-      <style>{`
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-      `}</style>
     </div>
   );
 };

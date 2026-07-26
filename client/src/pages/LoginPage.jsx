@@ -1,50 +1,99 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../components/Logo';
+
+const inputStyle = { display: 'block', width: '100%', padding: '11px 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', marginTop: '4px', fontSize: '14px', boxSizing: 'border-box', transition: 'border-color 0.18s, box-shadow 0.18s', outline: 'none' };
+
+const AuthBrand = () => (
+  <div className="auth-brand">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 1 }}>
+      <Logo size={40} light />
+      <span style={{ fontSize: '19px', fontWeight: 800, letterSpacing: '-0.02em' }}>Freelance Collab</span>
+    </div>
+    <div style={{ position: 'relative', zIndex: 1, maxWidth: '440px' }}>
+      <h1 style={{ color: '#fff', fontSize: '34px', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', marginBottom: '16px' }}>
+        Where freelance teams ship work together.
+      </h1>
+      <p style={{ fontSize: '15px', lineHeight: 1.65, color: 'rgba(255,255,255,0.86)', margin: 0 }}>
+        Boards, chat, and an AI assistant that keeps everyone in sync — built for fast-moving crews who don't have time to chase status updates.
+      </p>
+      <div style={{ display: 'flex', gap: '28px', marginTop: '34px' }}>
+        {[['Kanban', 'Drag-and-drop boards'], ['Real-time chat', 'Talk & share files'], ['AI assistant', 'Ask about your tasks']].map(([t, s]) => (
+          <div key={t}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>{t}</div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>{s}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div style={{ position: 'relative', zIndex: 1, fontSize: '12.5px', color: 'rgba(255,255,255,0.6)' }}>
+      Trusted by modern freelance collectives
+    </div>
+  </div>
+);
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
     try {
       const { data } = await axios.post('/api/auth/login', { email, password });
       login(data);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const inputStyle = { display: 'block', width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '4px', fontSize: '14px', boxSizing: 'border-box' };
-
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
-      <div style={{ background: 'white', padding: '40px', borderRadius: '16px', width: '400px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-        <h2 style={{ margin: '0 0 6px', fontSize: '24px' }}>Welcome back</h2>
-        <p style={{ color: '#999', marginBottom: '24px', fontSize: '14px' }}>Sign in to your workspace</p>
-        {error && <p style={{ color: '#e53935', background: '#fce4ec', padding: '10px', borderRadius: '8px', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '14px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600' }}>Email</label>
-            <input type="email" style={inputStyle} value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="auth-shell">
+      <AuthBrand />
+      <div className="auth-form-side">
+        <div style={{ width: '100%', maxWidth: '380px' }} className="slide-up">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px' }}>
+            <Logo size={32} />
+            <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>Freelance Collab</span>
           </div>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600' }}>Password</label>
-            <input type="password" style={inputStyle} value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
-          <button type="submit" style={{ width: '100%', padding: '12px', background: '#6c63ff', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '15px' }}>
-            Login
-          </button>
-        </form>
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#666' }}>
-          Don't have an account? <a href="/register" style={{ color: '#6c63ff', textDecoration: 'none', fontWeight: '600' }}>Register</a>
-        </p>
+          <h2 style={{ fontSize: '26px', marginBottom: '6px' }}>Welcome back</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '26px', fontSize: '14px' }}>Sign in to your workspace</p>
+
+          {error && (
+            <div style={{ color: 'var(--error-text)', background: 'var(--error-bg)', border: '1px solid #fecaca', padding: '11px 14px', borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '18px' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '16px' }}>
+              <label className="label">Email</label>
+              <input type="email" className="field" style={inputStyle} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@studio.com" required />
+            </div>
+            <div style={{ marginBottom: '24px' }}>
+              <label className="label">Password</label>
+              <input type="password" className="field" style={inputStyle} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+            </div>
+            <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '13.5px', color: 'var(--text-muted)' }}>
+            Don't have an account?{' '}
+            <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create one</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

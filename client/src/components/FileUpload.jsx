@@ -26,7 +26,6 @@ const FileUpload = ({ onUploadComplete, compact = false }) => {
 
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
-        // Do NOT set Content-Type manually — browser sets it with correct boundary
         onUploadProgress: (progressEvent) => {
           const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setProgress(percent);
@@ -58,33 +57,22 @@ const FileUpload = ({ onUploadComplete, compact = false }) => {
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
+        className="btn btn-ghost"
         style={{
-          padding: compact ? '6px 10px' : '8px 14px',
-          background: uploading ? '#f0f0f0' : 'white',
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          cursor: uploading ? 'not-allowed' : 'pointer',
+          padding: compact ? '6px 11px' : '9px 14px',
           fontSize: '13px',
-          color: '#555',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
+          display: 'flex', alignItems: 'center', gap: '7px',
         }}
       >
         {uploading ? (
           <>
-            <span>Uploading...</span>
-            <span style={{ color: '#6c63ff', fontWeight: '600' }}>{progress}%</span>
+            <span className="spin" style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid var(--border)', borderTopColor: 'var(--primary)', borderRadius: '50%' }} />
+            {progress}%
           </>
         ) : (
           <>📎 {compact ? '' : 'Attach File'}</>
         )}
       </button>
-      {uploading && (
-        <div style={{ marginTop: '4px', height: '3px', background: '#f0f0f0', borderRadius: '2px', width: '100%' }}>
-          <div style={{ height: '100%', width: `${progress}%`, background: '#6c63ff', borderRadius: '2px', transition: 'width 0.2s' }} />
-        </div>
-      )}
     </div>
   );
 };

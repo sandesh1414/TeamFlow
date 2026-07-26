@@ -20,14 +20,12 @@ const NotificationBell = () => {
   useEffect(() => {
     fetchNotifications();
 
-    // Socket for real-time notifications
     const socket = io(SOCKET_URL, { auth: { token: user.token } });
     socketRef.current = socket;
     socket.on('new_notification', (notification) => {
       setNotifications((prev) => [notification, ...prev]);
     });
 
-    // Close dropdown on outside click
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setOpen(false);
     };
@@ -90,33 +88,30 @@ const NotificationBell = () => {
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <button
-        onClick={() => setOpen((prev) => !prev)}
-        style={{ position: 'relative', background: open ? '#f0f0f0' : 'none', border: 'none', cursor: 'pointer', fontSize: '22px', padding: '6px 8px', borderRadius: '8px' }}
-      >
+      <button onClick={() => setOpen((prev) => !prev)} className="btn-icon" style={{ position: 'relative', fontSize: '18px', padding: '9px' }} aria-label="Notifications">
         🔔
         {unreadCount > 0 && (
-          <span style={{ position: 'absolute', top: '0', right: '0', background: '#e53935', color: 'white', fontSize: '10px', fontWeight: '700', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ position: 'absolute', top: '2px', right: '2px', background: 'var(--error)', color: '#fff', fontSize: '10px', fontWeight: 700, minWidth: '16px', height: '16px', padding: '0 4px', borderRadius: 'var(--r-pill)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div style={{ position: 'absolute', right: 0, top: '46px', width: '340px', background: 'white', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', border: '1px solid #f0f0f0', zIndex: 200, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '700' }}>
-              Notifications {unreadCount > 0 && <span style={{ color: '#6c63ff' }}>({unreadCount})</span>}
+        <div className="scale-in" style={{ position: 'absolute', right: 0, top: '48px', width: '340px', background: 'var(--surface)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--sh-lg)', border: '1px solid var(--border)', zIndex: 200, overflow: 'hidden' }}>
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border-soft)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700 }}>
+              Notifications {unreadCount > 0 && <span style={{ color: 'var(--primary)' }}>({unreadCount})</span>}
             </h3>
             {unreadCount > 0 && (
-              <button onClick={handleMarkAllRead} style={{ fontSize: '12px', color: '#6c63ff', background: 'none', border: 'none', cursor: 'pointer' }}>Mark all read</button>
+              <button onClick={handleMarkAllRead} style={{ fontSize: '12px', color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Mark all read</button>
             )}
           </div>
 
           <div style={{ maxHeight: '380px', overflowY: 'auto' }}>
             {notifications.length === 0 ? (
-              <div style={{ padding: '40px 20px', textAlign: 'center', color: '#bbb' }}>
-                <div style={{ fontSize: '32px', marginBottom: '8px' }}>🔔</div>
+              <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-faint)' }}>
+                <div style={{ fontSize: '30px', marginBottom: '8px' }}>🔔</div>
                 <p style={{ margin: 0, fontSize: '13px' }}>You're all caught up!</p>
               </div>
             ) : (
@@ -124,16 +119,16 @@ const NotificationBell = () => {
                 <div
                   key={notif._id}
                   onClick={() => handleNotificationClick(notif)}
-                  style={{ padding: '12px 16px', display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: 'pointer', background: notif.read ? 'white' : '#f5f3ff', borderBottom: '1px solid #f5f5f5', transition: 'background 0.15s' }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#fafafa'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = notif.read ? 'white' : '#f5f3ff'}
+                  style={{ padding: '12px 16px', display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: 'pointer', background: notif.read ? 'var(--surface)' : 'var(--primary-soft)', borderBottom: '1px solid var(--border-soft)', transition: 'background 0.15s' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--inset)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = notif.read ? 'var(--surface)' : 'var(--primary-soft)')}
                 >
-                  <span style={{ fontSize: '20px', flexShrink: 0 }}>{getIcon(notif.type)}</span>
+                  <span style={{ fontSize: '18px', flexShrink: 0 }}>{getIcon(notif.type)}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: '0 0 3px', fontSize: '13px', color: '#333', lineHeight: '1.4' }}>{notif.message}</p>
-                    <span style={{ fontSize: '11px', color: '#999' }}>{formatTime(notif.createdAt)}</span>
+                    <p style={{ margin: '0 0 3px', fontSize: '13px', color: 'var(--text-body)', lineHeight: 1.45 }}>{notif.message}</p>
+                    <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>{formatTime(notif.createdAt)}</span>
                   </div>
-                  {!notif.read && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6c63ff', flexShrink: 0, marginTop: '4px' }} />}
+                  {!notif.read && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, marginTop: '4px' }} />}
                 </div>
               ))
             )}

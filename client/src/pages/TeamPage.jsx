@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import KanbanBoard from '../components/KanbanBoard';
 import ChatRoom from '../components/ChatRoom';
-import NotificationBell from '../components/NotificationBell';
+import TopBar from '../components/TopBar';
 
 const TeamPage = () => {
   const { teamId } = useParams();
@@ -12,7 +12,7 @@ const TeamPage = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
-const activeTab = searchParams.get('tab') || 'kanban';
+  const activeTab = searchParams.get('tab') || 'kanban';
   const { user } = useAuth();
   const navigate = useNavigate();
   const config = { headers: { Authorization: `Bearer ${user.token}` } };
@@ -36,45 +36,30 @@ const activeTab = searchParams.get('tab') || 'kanban';
     fetchData();
   }, [teamId]);
 
-  if (loading) return <p style={{ padding: '40px' }}>Loading board...</p>;
-  if (!team) return <p style={{ padding: '40px' }}>Team not found.</p>;
+  if (loading) return <div style={{ padding: '40px', color: 'var(--text-muted)' }}>Loading board…</div>;
+  if (!team) return <div style={{ padding: '40px', color: 'var(--text-muted)' }}>Team not found.</div>;
 
   return (
-    <div style={{ padding: '24px 32px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: '#666' }}>←</button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: '22px' }}>{team.name}</h1>
-          <p style={{ margin: '2px 0 0', color: '#999', fontSize: '13px' }}>
-            {team.members.length} members · Invite code: <strong style={{ letterSpacing: '1px' }}>{team.inviteCode}</strong>
-          </p>
+    <div style={{ minHeight: '100vh' }}>
+      <TopBar
+        title={team.name}
+        subtitle={`${team.members.length} members · Invite code ${team.inviteCode}`}
+      >
+        <button className="btn-icon" onClick={() => navigate('/dashboard')} aria-label="Back" style={{ fontSize: '18px' }}>←</button>
+      </TopBar>
+
+      <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '24px 32px' }}>
+        <div className="tabs" style={{ marginBottom: '22px' }}>
+          <button className={`tab ${activeTab === 'kanban' ? 'active' : ''}`} onClick={() => setSearchParams({ tab: 'kanban' })}>📋 Board</button>
+          <button className={`tab ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setSearchParams({ tab: 'chat' })}>💬 Chat</button>
         </div>
-        <NotificationBell />
-      </div>
 
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: '#f0f0f0', padding: '4px', borderRadius: '10px', width: 'fit-content' }}>
-        {['kanban', 'chat'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setSearchParams({ tab })}
-            style={{
-              padding: '8px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer',
-              fontWeight: '600', fontSize: '13px', transition: 'all 0.2s',
-              background: activeTab === tab ? 'white' : 'transparent',
-              color: activeTab === tab ? '#6c63ff' : '#999',
-              boxShadow: activeTab === tab ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-            }}
-          >
-            {tab === 'kanban' ? '📋 Board' : '💬 Chat'}
-          </button>
-        ))}
+        {activeTab === 'kanban' ? (
+          <KanbanBoard tasks={tasks} setTasks={setTasks} teamId={teamId} members={team.members} />
+        ) : (
+          <ChatRoom teamId={teamId} />
+        )}
       </div>
-
-      {activeTab === 'kanban' ? (
-        <KanbanBoard tasks={tasks} setTasks={setTasks} teamId={teamId} members={team.members} />
-      ) : (
-        <ChatRoom teamId={teamId} />
-      )}
     </div>
   );
 };
