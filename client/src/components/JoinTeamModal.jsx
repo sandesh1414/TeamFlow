@@ -30,12 +30,12 @@ const JoinTeamModal = ({ onClose, onTeamJoined }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal slide-up" style={{ width: '400px', padding: '30px' }} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
           <div>
-            <h2 style={{ fontSize: '20px', marginBottom: '3px' }}>Join a team</h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Enter the 6-character invite code</p>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Join a Team</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Enter the 6-character invite code</p>
           </div>
-          <button className="btn-icon" onClick={onClose} aria-label="Close">✕</button>
+          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}>✕</button>
         </div>
 
         {error && <div style={{ color: 'var(--error-text)', background: 'var(--error-bg)', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}

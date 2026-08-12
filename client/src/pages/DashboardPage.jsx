@@ -7,6 +7,7 @@ import CreateTeamModal from '../components/CreateTeamModal';
 import JoinTeamModal from '../components/JoinTeamModal';
 import TopBar from '../components/TopBar';
 import EditTeamModal from '../components/EditTeamModal';
+import { avatarGradient } from '../styles/theme';
 
 const DashboardPage = () => {
   const [teams, setTeams] = useState([]);
@@ -66,51 +67,55 @@ const DashboardPage = () => {
           </div>
         ) : teams.length === 0 ? (
           <div
-            className="card slide-up panel-dashed"
+            className="card slide-up"
             style={{
               textAlign: 'center',
-              padding: '72px 40px',
-              maxWidth: '560px',
+              padding: '80px 40px',
+              maxWidth: '580px',
               margin: '0 auto',
+              border: '1px dashed var(--border-strong)',
+              boxShadow: 'none',
             }}
           >
             <div
               style={{
-                width: '76px',
-                height: '76px',
-                borderRadius: '22px',
+                width: '80px',
+                height: '80px',
+                borderRadius: 'var(--r-2xl)',
                 background: 'linear-gradient(135deg, var(--primary-soft), var(--ai-soft))',
-                border: '1px solid var(--border-strong)',
+                border: '1px solid var(--border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '32px',
-                margin: '0 auto 22px',
+                fontSize: '34px',
+                margin: '0 auto 24px',
               }}
             >
               🚀
             </div>
 
-            <h2 style={{ fontSize: '22px', margin: '0 0 8px' }}>Start your first team</h2>
+            <h2 style={{ fontSize: '24px', marginBottom: '10px', letterSpacing: '-0.025em' }}>
+              Start your first team
+            </h2>
 
             <p
               style={{
                 color: 'var(--text-muted)',
-                fontSize: '14.5px',
+                fontSize: '15px',
                 lineHeight: 1.6,
-                maxWidth: '380px',
-                margin: '0 auto 26px',
+                maxWidth: '400px',
+                margin: '0 auto 28px',
               }}
             >
-              Create a workspace for your crew or hop into one with an invite code from a
-              teammate.
+              Create a workspace for your crew or hop into one with an invite
+              code from a teammate.
             </p>
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
+              <button className="btn btn-primary btn-lg" onClick={() => setShowCreate(true)}>
                 + Create Team
               </button>
-              <button className="btn btn-secondary" onClick={() => setShowJoin(true)}>
+              <button className="btn btn-secondary btn-lg" onClick={() => setShowJoin(true)}>
                 Join with code
               </button>
             </div>
@@ -122,18 +127,20 @@ const DashboardPage = () => {
                 display: 'flex',
                 alignItems: 'flex-end',
                 justifyContent: 'space-between',
-                marginBottom: '18px',
+                marginBottom: '22px',
               }}
             >
               <div>
-                <h2 style={{ fontSize: '20px', margin: '0 0 4px' }}>Your Workspaces</h2>
+                <h2 style={{ fontSize: '22px', margin: '0 0 4px', letterSpacing: '-0.025em' }}>
+                  Your Workspaces
+                </h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '13.5px', margin: 0 }}>
                   {teams.length} workspace{teams.length !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {teams.map((team, index) => {
                 const role = getMyRole(team);
 
@@ -143,13 +150,13 @@ const DashboardPage = () => {
                     className="card card-hover slide-up"
                     onClick={() => navigate(`/team/${team._id}`)}
                     style={{
-                      padding: '20px 22px',
+                      padding: '22px 24px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: '20px',
-                      animationDelay: `${Math.min(index, 6) * 40}ms`,
+                      animationDelay: `${Math.min(index, 6) * 50}ms`,
                     }}
                   >
                     <div
@@ -166,15 +173,15 @@ const DashboardPage = () => {
                           width: '56px',
                           height: '56px',
                           flexShrink: 0,
-                          borderRadius: '18px',
-                          background: 'linear-gradient(135deg, var(--primary), #38bdf8)',
+                          borderRadius: 'var(--r-lg)',
+                          background: avatarGradient(team.name),
                           color: '#fff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '23px',
-                          fontWeight: 750,
-                          boxShadow: 'var(--sh-glow)',
+                          fontSize: '24px',
+                          fontWeight: 800,
+                          boxShadow: 'var(--sh-md)',
                         }}
                       >
                         {team.name[0].toUpperCase()}
@@ -189,17 +196,18 @@ const DashboardPage = () => {
                             marginBottom: '5px',
                           }}
                         >
-                          <h3 className="truncate" style={{ fontSize: '16.5px', margin: 0 }}>
+                          <h3 className="truncate" style={{ fontSize: '17px', margin: 0 }}>
                             {team.name}
                           </h3>
-
                           <span
                             className="badge"
                             style={{
                               background:
                                 role === 'owner' ? 'var(--warning-bg)' : 'var(--success-bg)',
                               color:
-                                role === 'owner' ? 'var(--warning-text)' : 'var(--success-text)',
+                                role === 'owner'
+                                  ? 'var(--warning-text)'
+                                  : 'var(--success-text)',
                               flexShrink: 0,
                             }}
                           >
@@ -242,7 +250,7 @@ const DashboardPage = () => {
                                 fontSize: '11px',
                                 marginLeft: i === 0 ? 0 : -9,
                                 boxShadow: '0 0 0 2px var(--surface)',
-                                background: 'linear-gradient(135deg, var(--primary), #38bdf8)',
+                                background: avatarGradient(m.user.name),
                               }}
                             >
                               {m.user.name?.[0]?.toUpperCase()}
@@ -287,18 +295,28 @@ const DashboardPage = () => {
             </div>
 
             <button
-              className="card card-hover panel-dashed"
+              className="card card-hover"
               onClick={() => setShowCreate(true)}
               style={{
                 width: '100%',
                 marginTop: '14px',
-                padding: '18px',
+                padding: '20px',
                 background: 'transparent',
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
                 fontSize: '14px',
                 fontWeight: 550,
                 boxShadow: 'none',
+                border: '1px dashed var(--border-strong)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--primary-softer)';
+                e.currentTarget.style.color = 'var(--primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+                e.currentTarget.style.color = 'var(--text-muted)';
               }}
             >
               + Create another workspace

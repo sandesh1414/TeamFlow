@@ -9,25 +9,26 @@ const TopBar = ({ title, subtitle, children }) => {
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const profileRef = useRef(null);
 
   const initial = user?.name?.[0]?.toUpperCase() || '?';
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(event.target)
-      ) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfileMenu(false);
       }
     };
 
+    const handleScroll = () => setScrolled(window.scrollY > 4);
+
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -37,14 +38,15 @@ const TopBar = ({ title, subtitle, children }) => {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--border-soft)',
-        padding: '16px 32px',
+        background: scrolled ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.6)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+        padding: '14px 32px',
         display: 'flex',
         alignItems: 'center',
         gap: '18px',
+        transition: 'background 0.25s ease, border-color 0.25s ease',
       }}
     >
       {/* Logo */}
@@ -63,12 +65,7 @@ const TopBar = ({ title, subtitle, children }) => {
       </button>
 
       {/* Page Title */}
-      <div
-        style={{
-          flex: 1,
-          minWidth: 0,
-        }}
-      >
+      <div style={{ flex: 1, minWidth: 0 }}>
         {title && (
           <div
             style={{
@@ -79,16 +76,16 @@ const TopBar = ({ title, subtitle, children }) => {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              letterSpacing: '-0.02em',
             }}
           >
             {title}
           </div>
         )}
-
         {subtitle && (
           <div
             style={{
-              marginTop: '4px',
+              marginTop: '3px',
               fontSize: '13px',
               color: 'var(--text-muted)',
               whiteSpace: 'nowrap',
@@ -102,14 +99,7 @@ const TopBar = ({ title, subtitle, children }) => {
       </div>
 
       {/* Right Side */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}
-      >
-        {/* Page Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {children && (
           <div
             style={{
@@ -117,30 +107,24 @@ const TopBar = ({ title, subtitle, children }) => {
               alignItems: 'center',
               gap: '10px',
               paddingRight: '14px',
-              borderRight: '1px solid var(--border-soft)',
+              borderRight: '1px solid var(--border)',
             }}
           >
             {children}
           </div>
         )}
 
-        {/* Notifications */}
         <NotificationBell />
 
         {/* Profile */}
-        <div
-          ref={profileRef}
-          style={{
-            position: 'relative',
-          }}
-        >
+        <div ref={profileRef} style={{ position: 'relative' }}>
           <button
             onClick={() => setShowProfileMenu((prev) => !prev)}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '9px',
-              padding: '5px 11px 5px 5px',
+              padding: '5px 12px 5px 5px',
               background: 'var(--inset)',
               borderRadius: 'var(--r-pill)',
               border: '1px solid var(--border-soft)',
@@ -150,33 +134,19 @@ const TopBar = ({ title, subtitle, children }) => {
           >
             <span
               className="avatar"
-              style={{
-                width: '30px',
-                height: '30px',
-                fontSize: '12px',
-              }}
+              style={{ width: '30px', height: '30px', fontSize: '12px' }}
             >
               {initial}
             </span>
-
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                color: 'var(--text-body)',
-              }}
-            >
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-body)' }}>
               {user?.name?.split(' ')[0]}
             </span>
-
             <span
               style={{
-                fontSize: '11px',
+                fontSize: '10px',
                 color: 'var(--text-muted)',
                 marginLeft: '2px',
-                transform: showProfileMenu
-                  ? 'rotate(180deg)'
-                  : 'rotate(0deg)',
+                transform: showProfileMenu ? 'rotate(180deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s ease',
               }}
             >
@@ -184,39 +154,32 @@ const TopBar = ({ title, subtitle, children }) => {
             </span>
           </button>
 
-          {/* Profile Dropdown */}
           {showProfileMenu && (
             <div
+              className="slide-down"
               style={{
                 position: 'absolute',
                 top: 'calc(100% + 10px)',
                 right: 0,
-                width: '180px',
+                width: '200px',
                 background: 'var(--surface)',
-                border: '1px solid var(--border-soft)',
-                borderRadius: '14px',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--r-lg)',
                 padding: '6px',
-                boxShadow: '0 12px 30px rgba(0, 0, 0, 0.12)',
-                animation: 'slide-up 0.18s ease-out',
+                boxShadow: 'var(--sh-lg)',
+                overflow: 'hidden',
               }}
             >
               <div
                 style={{
-                  padding: '10px 11px',
+                  padding: '12px 12px',
                   borderBottom: '1px solid var(--border-soft)',
                   marginBottom: '5px',
                 }}
               >
-                <div
-                  style={{
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    color: 'var(--text)',
-                  }}
-                >
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
                   {user?.name}
                 </div>
-
                 <div
                   style={{
                     fontSize: '11px',
@@ -237,16 +200,19 @@ const TopBar = ({ title, subtitle, children }) => {
                 }}
                 style={{
                   width: '100%',
-                  padding: '10px 11px',
+                  padding: '10px 12px',
                   border: 'none',
                   background: 'transparent',
-                  borderRadius: '9px',
+                  borderRadius: 'var(--r-sm)',
                   textAlign: 'left',
                   cursor: 'pointer',
-                  color: '#dc2626',
+                  color: 'var(--error-text)',
                   fontSize: '13px',
                   fontWeight: 600,
+                  transition: 'background 0.15s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--error-bg)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 Log out
               </button>

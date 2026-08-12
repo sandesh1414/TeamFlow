@@ -11,113 +11,55 @@ const EditTeamModal = ({ team, onClose, onTeamUpdated }) => {
   const { user } = useAuth();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!name.trim()) {
-    setError('Team name is required');
-    return;
-  }
-
-  setLoading(true);
-  setError('');
-
-  try {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    };
-
-    const response = await axios.put(`/api/teams/${team._id}`, { name: name.trim(), description: description.trim() }, config);
-
-    onTeamUpdated(response.data);
-  } catch (err) {
-  console.log('FULL ERROR:', err);
-  console.log('SERVER RESPONSE:', err.response?.data);
-
-  setError(
-    err.response?.data?.message ||
-    err.message ||
-    'Failed to update team'
-  );
-}
-   finally {
-    setLoading(false);
-  }
-};
+    e.preventDefault();
+    if (!name.trim()) { setError('Team name is required'); return; }
+    if (name.trim().length < 2) { setError('Team name must be at least 2 characters'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const config = { headers: { Authorization: `Bearer ${user.token}` } };
+      const response = await axios.put(`/api/teams/${team._id}`, { name: name.trim(), description: description.trim() }, config);
+      onTeamUpdated(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to update team');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={onClose}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}
-    >
+    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal slide-up"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '520px',
-          boxSizing: 'border-box',
-          padding: '28px',
-        }}
+        style={{ width: '460px', padding: '28px' }}
       >
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '26px',
-          }}
-        >
-          <h2
-            style={{
-              margin: 0,
-              fontSize: '24px',
-            }}
-          >
-            Edit Team
-          </h2>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn-icon"
-            aria-label="Close"
-          >
-            ✕
-          </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+          <div>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Edit Team</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
+              Update your workspace details
+            </p>
+          </div>
+          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}>✕</button>
         </div>
 
         {error && (
           <div
+            className="slide-down"
             style={{
-              color: 'var(--error-text)',
-              background: 'var(--error-bg)',
-              border: '1px solid #fecaca',
-              padding: '10px 14px',
-              borderRadius: 'var(--r-md)',
-              fontSize: '13px',
-              marginBottom: '18px',
+              color: 'var(--error-text)', background: 'var(--error-bg)',
+              border: '1px solid #fecaca', padding: '11px 15px',
+              borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '18px', marginTop: '18px',
             }}
           >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          {/* Team Name */}
-          <div style={{ marginBottom: '20px' }}>
-            <label className="label">
-              Team Name
-            </label>
-
+        <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+          <div style={{ marginBottom: '18px' }}>
+            <label className="label">Team Name</label>
             <input
               type="text"
               value={name}
@@ -125,67 +67,29 @@ const EditTeamModal = ({ team, onClose, onTeamUpdated }) => {
               className="field"
               placeholder="Enter team name"
               required
-              style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                padding: '12px 14px',
-                marginTop: '7px',
-              }}
+              maxLength={50}
             />
           </div>
 
-          {/* Description */}
-          <div style={{ marginBottom: '26px' }}>
+          <div style={{ marginBottom: '24px' }}>
             <label className="label">
-              Description
+              Description <span style={{ color: 'var(--text-faint)', fontWeight: 400 }}>(optional)</span>
             </label>
-
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="field"
               placeholder="What is this team about?"
               rows={4}
-              style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                padding: '12px 14px',
-                marginTop: '7px',
-                resize: 'vertical',
-                minHeight: '110px',
-              }}
+              style={{ resize: 'vertical', minHeight: '90px' }}
             />
           </div>
 
-          {/* Buttons */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-secondary"
-              style={{
-                minWidth: '100px',
-              }}
-            >
-              Cancel
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={loading}>
+              {loading ? 'Saving…' : 'Save Changes'}
             </button>
-
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-              style={{
-                minWidth: '150px',
-              }}
-            >
-              {loading ? 'Saving...' : 'Save Changes'}
-            </button>
+            <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

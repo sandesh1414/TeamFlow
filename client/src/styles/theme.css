@@ -52,7 +52,7 @@ h1, h2, h3 { letter-spacing: -0.02em; font-weight: 650; color: var(--text); }
   transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
 }
 .card-hover:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: rgba(56, 189, 248, 0.35);
   box-shadow: var(--sh-md), 0 0 0 1px rgba(56, 189, 248, 0.08), 0 18px 40px -22px rgba(37, 99, 235, 0.8);
 }

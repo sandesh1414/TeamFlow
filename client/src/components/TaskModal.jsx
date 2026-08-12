@@ -46,8 +46,8 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) { setError('Task title is required'); return; }
-  if (title.trim().length < 2) { setError('Title must be at least 2 characters'); return; }
-  if (title.trim().length > 100) { setError('Title is too long (max 100 characters)'); return; }
+    if (title.trim().length < 2) { setError('Title must be at least 2 characters'); return; }
+    if (title.trim().length > 100) { setError('Title is too long (max 100 characters)'); return; }
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const { data } = await axios.post(
@@ -63,10 +63,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
   };
 
   const handleSplitWithAI = async () => {
-    if (!title.trim()) {
-      alert('Please enter a task title first.');
-      return;
-    }
+    if (!title.trim()) { setError('Please enter a task title first.'); return; }
     setSplitting(true);
     setSplitResult(null);
     try {
@@ -75,7 +72,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
       setSplitResult(data);
       data.tasks.forEach((task) => onTaskCreated(task));
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to split task. Please try again.');
+      setError(err.response?.data?.message || 'Failed to split task. Please try again.');
     } finally {
       setSplitting(false);
     }
@@ -87,7 +84,6 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
       const updates = Object.entries(splitAssignments)
         .filter(([taskId, userId]) => userId)
         .map(([taskId, userId]) => axios.put(`/api/tasks/${taskId}`, { assignedTo: userId }, config));
-
       await Promise.all(updates);
     } catch (err) {
       console.error('Failed to assign tasks:', err);
@@ -96,100 +92,72 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
     }
   };
 
-  // Unified, bulletproof styles for consistent alignment
-  const styles = {
-    label: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      fontSize: '13px',
-      fontWeight: '600',
-      color: 'var(--text, #334155)',
-      marginBottom: '6px',
-    },
-    input: {
-      display: 'block',
-      width: '100%',
-      padding: '10px 12px',
-      borderRadius: '8px',
-      border: '1px solid var(--border, #cbd5e1)',
-      fontSize: '14px',
-      color: 'var(--text, #0f172a)',
-      backgroundColor: 'var(--surface, #ffffff)',
-      boxSizing: 'border-box',
-      outline: 'none',
-      transition: 'border-color 0.15s ease',
-    },
-    fieldGroup: {
-      marginBottom: '18px',
-    },
-  };
-
   return (
-    <div className="modal-overlay" onClick={onClose} style={{ padding: '16px', boxSizing: 'border-box' }}>
+    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal slide-up"
-        style={{
-          width: '100%',
-          maxWidth: '520px',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          padding: '24px',
-          borderRadius: '12px',
-          backgroundColor: 'var(--bg, #ffffff)',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+        style={{ width: '540px', maxHeight: '90vh', overflowY: 'auto', padding: '28px' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: '700', margin: 0, color: 'var(--text, #0f172a)' }}>Create Task</h2>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: 'var(--text-muted, #64748b)', padding: '4px' }}
-          >
-            ✕
-          </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+          <div>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Create Task</h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
+              Fill the form manually, or let AI split it into subtasks.
+            </p>
+          </div>
+          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}>✕</button>
         </div>
-        <p style={{ fontSize: '13px', color: 'var(--text-muted, #64748b)', margin: '0 0 20px 0' }}>
-          Fill the form manually, or let AI split it into subtasks.
-        </p>
 
         {error && (
-          <div style={{ color: '#991b1b', background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', marginBottom: '18px' }}>
+          <div
+            className="slide-down"
+            style={{
+              color: 'var(--error-text)', background: 'var(--error-bg)',
+              border: '1px solid #fecaca', padding: '11px 15px',
+              borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '18px',
+            }}
+          >
             {error}
           </div>
         )}
 
         {splitResult ? (
-          /* AI Subtask Assignment View */
-          <div style={{ background: 'var(--ai-soft, #f0fdfa)', border: '1px solid var(--ai-softer, #ccfbf1)', borderRadius: '10px', padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <span style={{ fontSize: '16px' }}>✨</span>
-              <strong style={{ fontSize: '14px', color: 'var(--ai-text, #0f766e)' }}>
-                AI created {splitResult.tasks.length} subtasks — assign them below
+          <div style={{ background: 'var(--ai-soft)', border: '1px solid var(--ai-softer)', borderRadius: 'var(--r-lg)', padding: '20px', marginTop: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '18px' }}>✨</span>
+              <strong style={{ fontSize: '14px', color: 'var(--ai-text)' }}>
+                AI created {splitResult.tasks.length} subtasks
               </strong>
             </div>
 
             {splitResult.tasks.map((task, idx) => (
-              <div key={task._id} style={{ background: 'var(--surface, #ffffff)', borderRadius: '8px', padding: '12px', marginBottom: '10px', borderLeft: '3px solid #0d9488', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+              <div
+                key={task._id}
+                className="slide-up"
+                style={{
+                  background: 'var(--surface)', borderRadius: 'var(--r-md)', padding: '14px',
+                  marginBottom: '10px', borderLeft: '3px solid var(--ai)',
+                  boxShadow: 'var(--sh-xs)',
+                  animationDelay: `${idx * 60}ms`,
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text, #0f172a)', flex: 1 }}>{task.title}</span>
-                  <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', marginLeft: '8px', textTransform: 'capitalize' }}>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--text)', flex: 1 }}>{task.title}</span>
+                  <span
+                    className="badge"
+                    style={{ background: 'var(--success-bg)', color: 'var(--success-text)', marginLeft: '8px', textTransform: 'capitalize' }}
+                  >
                     {splitResult.aiSuggestions[idx]?.priority || 'medium'}
                   </span>
                 </div>
-
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <label style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)', flexShrink: 0, fontWeight: '500' }}>Assign to:</label>
+                  <label style={{ fontSize: '12px', color: 'var(--text-muted)', flexShrink: 0, fontWeight: 500 }}>Assign to:</label>
                   <select
                     defaultValue=""
                     onChange={(e) => setSplitAssignments((prev) => ({ ...prev, [task._id]: e.target.value }))}
-                    style={{ ...styles.input, padding: '6px 10px', fontSize: '13px' }}
+                    className="field"
+                    style={{ padding: '6px 10px', fontSize: '13px', flex: 1 }}
                   >
                     <option value="">Unassigned</option>
                     {members.map((m) => (
@@ -200,137 +168,98 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
               </div>
             ))}
 
-            <button
-              onClick={handleDoneAssigning}
-              style={{ width: '100%', padding: '10px', marginTop: '14px', borderRadius: '8px', background: '#0f172a', color: '#fff', fontWeight: '600', border: 'none', cursor: 'pointer' }}
-            >
+            <button onClick={handleDoneAssigning} className="btn btn-primary btn-block" style={{ marginTop: '16px' }}>
               Done
             </button>
           </div>
         ) : (
-          /* Manual / AI Input Form */
-          <form onSubmit={handleSubmit}>
-            {/* Title Field */}
-            <div style={styles.fieldGroup}>
-  <label style={styles.label}>Title *</label>
+          <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+            <div style={{ marginBottom: '18px' }}>
+              <label className="label">Title <span style={{ color: 'var(--error-text)' }}>*</span></label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Build authentication system"
+                required
+                maxLength={100}
+                className="field"
+              />
+              <div style={{ fontSize: '11px', color: title.length > 90 ? 'var(--error-text)' : 'var(--text-faint)', textAlign: 'right', marginTop: '4px' }}>
+                {title.length}/100
+              </div>
+            </div>
 
-  <input
-    value={title}
-    onChange={(e) => setTitle(e.target.value)}
-    placeholder="e.g. Build authentication system"
-    required
-    maxLength={100}
-    style={styles.input}
-  />
-
-  <div
-    style={{
-      fontSize: '11px',
-      color: title.length > 90 ? '#e53935' : '#bbb',
-      textAlign: 'right',
-      marginTop: '3px',
-    }}
-  >
-    {title.length}/100
-  </div>
-</div>
-
-            {/* AI Action Box with Fixed Contrast */}
-            <div style={{ background: 'var(--ai-soft, #f0fdfa)', border: '1px dashed #0d9488', borderRadius: '10px', padding: '16px', marginBottom: '20px', textAlign: 'center' }}>
-              <p style={{ fontSize: '13px', color: '#0f766e', margin: '0 0 12px', fontWeight: '600' }}>
+            {/* AI Split box */}
+            <div
+              style={{
+                background: 'var(--ai-soft)', border: '1px dashed var(--ai)',
+                borderRadius: 'var(--r-lg)', padding: '18px', marginBottom: '20px', textAlign: 'center',
+              }}
+            >
+              <p style={{ fontSize: '13px', color: 'var(--ai-text)', margin: '0 0 12px', fontWeight: 600 }}>
                 ✨ Let AI split this into subtasks automatically
               </p>
               <button
                 type="button"
                 onClick={handleSplitWithAI}
                 disabled={splitting || !title.trim()}
-                style={{
-                  padding: '9px 20px',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #0d9488 0%, #0284c7 100%)',
-                  color: '#ffffff',
-                  cursor: splitting || !title.trim() ? 'not-allowed' : 'pointer',
-                  opacity: splitting || !title.trim() ? 0.6 : 1,
-                  boxShadow: '0 2px 4px rgba(13, 148, 136, 0.2)',
-                  transition: 'opacity 0.2s ease',
-                }}
+                className="btn btn-ai"
               >
-                {splitting ? '✨ Splitting…' : '✨ Split with AI'}
+                {splitting ? (
+                  <>
+                    <span className="spin" style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%' }} />
+                    Splitting…
+                  </>
+                ) : '✨ Split with AI'}
               </button>
-              <p style={{ fontSize: '11px', color: '#64748b', margin: '8px 0 0' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '10px 0 0' }}>
                 Creates 5–6 subtasks from your title
               </p>
             </div>
 
-            {/* Styled Divider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border, #e2e8f0)' }} />
-              <span style={{ fontSize: '11px', fontWeight: '600', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 or fill manually
               </span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border, #e2e8f0)' }} />
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
 
-            {/* Description Field */}
-            <div style={styles.fieldGroup}>
-  <label style={styles.label}>Description</label>
+            <div style={{ marginBottom: '18px' }}>
+              <label className="label">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={1000}
+                className="field"
+                style={{ minHeight: '84px', resize: 'vertical' }}
+              />
+              <div style={{ fontSize: '11px', color: description.length > 900 ? 'var(--error-text)' : 'var(--text-faint)', textAlign: 'right', marginTop: '4px' }}>
+                {description.length}/1000
+              </div>
+            </div>
 
-  <textarea
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    maxLength={1000}
-    style={{
-      ...styles.input,
-      minHeight: '80px',
-      resize: 'vertical',
-    }}
-  />
-
-  <div
-    style={{
-      fontSize: '11px',
-      color: description.length > 900 ? '#e53935' : '#bbb',
-      textAlign: 'right',
-      marginTop: '3px',
-    }}
-  >
-    {description.length}/1000
-  </div>
-</div>
-
-            {/* 2-Column Grid: Assign To & Priority */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '18px' }}>
               <div>
-                <label style={styles.label}>Assign To</label>
-                <select
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  style={styles.input}
-                >
+                <label className="label">Assign To</label>
+                <select value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} className="field">
                   <option value="">Unassigned</option>
                   {members.map((m) => (
                     <option key={m.user._id} value={m.user._id}>{m.user.name}</option>
                   ))}
                 </select>
               </div>
-
               <div>
-                <label style={styles.label}>
+                <label className="label">
                   <span>Priority</span>
-                  {aiPriorityLoading && <span style={{ fontSize: '11px', color: '#0d9488', fontWeight: 'normal' }}>✨ thinking…</span>}
-                  {prioritySetByAI && !aiPriorityLoading && <span style={{ fontSize: '11px', color: '#0d9488', fontWeight: 'normal' }}>✨ suggested</span>}
+                  {aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>✨ thinking…</span>}
+                  {prioritySetByAI && !aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>✨ suggested</span>}
                 </label>
                 <select
                   value={priority}
                   onChange={(e) => { setPriority(e.target.value); setPrioritySetByAI(false); }}
-                  style={{
-                    ...styles.input,
-                    borderColor: prioritySetByAI ? '#0d9488' : 'var(--border, #cbd5e1)',
-                    backgroundColor: prioritySetByAI ? '#f0fdfa' : 'var(--surface, #ffffff)',
-                  }}
+                  className="field"
+                  style={prioritySetByAI ? { borderColor: 'var(--ai)', background: 'var(--ai-soft)' } : undefined}
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -340,32 +269,14 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
               </div>
             </div>
 
-            {/* Due Date Field */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={styles.label}>Due Date</label>
-              <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                style={styles.input}
-              />
+              <label className="label">Due Date</label>
+              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="field" />
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-              <button
-                type="submit"
-                style={{ flex: 1, padding: '11px', borderRadius: '8px', background: '#2563eb', color: '#ffffff', fontWeight: '600', border: 'none', cursor: 'pointer', fontSize: '14px' }}
-              >
-                Create Task
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                style={{ padding: '11px 20px', borderRadius: '8px', background: 'transparent', color: '#64748b', fontWeight: '600', border: '1px solid #cbd5e1', cursor: 'pointer', fontSize: '14px' }}
-              >
-                Cancel
-              </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Create Task</button>
+              <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
             </div>
           </form>
         )}
