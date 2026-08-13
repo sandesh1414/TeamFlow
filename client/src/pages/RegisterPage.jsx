@@ -24,7 +24,7 @@ const AuthBrand = () => (
   <div className="auth-brand" style={{ padding: '48px 56px' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 1 }}>
       <Logo size={40} light />
-      <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.025em' }}>Freelance Collab</span>
+      <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.025em' }}>TeamFlow</span>
     </div>
 
     <div style={{ position: 'relative', zIndex: 1, maxWidth: '480px' }}>
@@ -130,7 +130,7 @@ const RegisterPage = () => {
         <div style={{ width: '100%', maxWidth: '380px' }} className="slide-up">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
             <Logo size={32} />
-            <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>Freelance Collab</span>
+            <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text)' }}>TeamFlow</span>
           </div>
           <h2 style={{ fontSize: '26px', marginBottom: '6px', letterSpacing: '-0.03em' }}>Create your account</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '28px', fontSize: '14px' }}>

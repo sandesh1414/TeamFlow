@@ -47,14 +47,19 @@ const DashboardPage = () => {
     return member?.role || 'member';
   };
 
+  const totalMembers = teams.reduce((sum, t) => sum + t.members.length, 0);
+  const ownerCount = teams.filter((t) => getMyRole(t) === 'owner').length;
+
   return (
     <div style={{ minHeight: '100vh' }}>
       <TopBar title="My Teams" subtitle="Pick a workspace to dive in">
         <button className="btn btn-secondary btn-sm" onClick={() => setShowJoin(true)}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M21 3l-9 9"/><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
           Join Team
         </button>
         <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
-          + Create Team
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create Team
         </button>
       </TopBar>
 
@@ -87,11 +92,11 @@ const DashboardPage = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '34px',
                 margin: '0 auto 24px',
+                color: 'var(--primary)',
               }}
             >
-              🚀
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
             </div>
 
             <h2 style={{ fontSize: '24px', marginBottom: '10px', letterSpacing: '-0.025em' }}>
@@ -113,7 +118,8 @@ const DashboardPage = () => {
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               <button className="btn btn-primary btn-lg" onClick={() => setShowCreate(true)}>
-                + Create Team
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create Team
               </button>
               <button className="btn btn-secondary btn-lg" onClick={() => setShowJoin(true)}>
                 Join with code
@@ -122,21 +128,33 @@ const DashboardPage = () => {
           </div>
         ) : (
           <>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                marginBottom: '22px',
-              }}
-            >
-              <div>
-                <h2 style={{ fontSize: '22px', margin: '0 0 4px', letterSpacing: '-0.025em' }}>
+            {/* Welcome header band */}
+            <div className="page-band slide-up" style={{ marginBottom: '32px' }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary)', marginBottom: '6px' }}>
+                  Welcome back, {user.name?.split(' ')[0]}
+                </div>
+                <h2 style={{ fontSize: '26px', marginBottom: '6px', letterSpacing: '-0.028em' }}>
                   Your Workspaces
                 </h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '13.5px', margin: 0 }}>
-                  {teams.length} workspace{teams.length !== 1 ? 's' : ''}
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px', maxWidth: '420px' }}>
+                  {teams.length} team{teams.length !== 1 ? 's' : ''} · {totalMembers} member{totalMembers !== 1 ? 's' : ''} across your workspace
                 </p>
+
+                <div style={{ display: 'flex', gap: '36px', marginTop: '24px' }}>
+                  <div className="mini-stat">
+                    <div className="mini-stat-value">{teams.length}</div>
+                    <div className="mini-stat-label">Teams</div>
+                  </div>
+                  <div className="mini-stat">
+                    <div className="mini-stat-value">{totalMembers}</div>
+                    <div className="mini-stat-label">Members</div>
+                  </div>
+                  <div className="mini-stat">
+                    <div className="mini-stat-value">{ownerCount}</div>
+                    <div className="mini-stat-label">Owner</div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -147,7 +165,7 @@ const DashboardPage = () => {
                 return (
                   <div
                     key={team._id}
-                    className="card card-hover slide-up"
+                    className="card card-hover"
                     onClick={() => navigate(`/team/${team._id}`)}
                     style={{
                       padding: '22px 24px',
@@ -156,7 +174,6 @@ const DashboardPage = () => {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: '20px',
-                      animationDelay: `${Math.min(index, 6) * 50}ms`,
                     }}
                   >
                     <div
@@ -196,7 +213,7 @@ const DashboardPage = () => {
                             marginBottom: '5px',
                           }}
                         >
-                          <h3 className="truncate" style={{ fontSize: '17px', margin: 0 }}>
+                          <h3 className="truncate" style={{ fontSize: '17px' }}>
                             {team.name}
                           </h3>
                           <span
@@ -220,7 +237,6 @@ const DashboardPage = () => {
                           style={{
                             color: 'var(--text-muted)',
                             fontSize: '13px',
-                            margin: 0,
                             maxWidth: '600px',
                           }}
                         >
@@ -284,9 +300,9 @@ const DashboardPage = () => {
 
                       <span
                         className="row-arrow"
-                        style={{ fontSize: '19px', color: 'var(--text-faint)', fontWeight: 300 }}
+                        style={{ color: 'var(--text-faint)' }}
                       >
-                        →
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                       </span>
                     </div>
                   </div>
@@ -319,7 +335,8 @@ const DashboardPage = () => {
                 e.currentTarget.style.color = 'var(--text-muted)';
               }}
             >
-              + Create another workspace
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Create another workspace
             </button>
           </>
         )}

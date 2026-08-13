@@ -35,7 +35,7 @@ const JoinTeamModal = ({ onClose, onTeamJoined }) => {
             <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, letterSpacing: '-0.02em' }}>Join a Team</h2>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>Enter the 6-character invite code</p>
           </div>
-          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}>✕</button>
+          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
         {error && <div style={{ color: 'var(--error-text)', background: 'var(--error-bg)', border: '1px solid #fecaca', padding: '10px 14px', borderRadius: 'var(--r-md)', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}

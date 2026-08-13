@@ -106,7 +106,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
               Fill the form manually, or let AI split it into subtasks.
             </p>
           </div>
-          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}>✕</button>
+          <button className="btn-icon" onClick={onClose} aria-label="Close" style={{ flexShrink: 0 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
 
         {error && (
@@ -125,7 +125,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
         {splitResult ? (
           <div style={{ background: 'var(--ai-soft)', border: '1px solid var(--ai-softer)', borderRadius: 'var(--r-lg)', padding: '20px', marginTop: '18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '18px' }}>✨</span>
+              <span className="icon-wrap" style={{ color: 'var(--ai)' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6L20 9.5 13.5 12 12 18l-1.5-6L4 9.5 10.5 8z"/></svg></span>
               <strong style={{ fontSize: '14px', color: 'var(--ai-text)' }}>
                 AI created {splitResult.tasks.length} subtasks
               </strong>
@@ -197,7 +197,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
               }}
             >
               <p style={{ fontSize: '13px', color: 'var(--ai-text)', margin: '0 0 12px', fontWeight: 600 }}>
-                ✨ Let AI split this into subtasks automatically
+                Let AI split this into subtasks automatically
               </p>
               <button
                 type="button"
@@ -210,7 +210,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
                     <span className="spin" style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%' }} />
                     Splitting…
                   </>
-                ) : '✨ Split with AI'}
+                ) : 'Split with AI'}
               </button>
               <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '10px 0 0' }}>
                 Creates 5–6 subtasks from your title
@@ -252,8 +252,8 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
               <div>
                 <label className="label">
                   <span>Priority</span>
-                  {aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>✨ thinking…</span>}
-                  {prioritySetByAI && !aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>✨ suggested</span>}
+                  {aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>thinking…</span>}
+                  {prioritySetByAI && !aiPriorityLoading && <span style={{ fontSize: '11px', color: 'var(--ai)', fontWeight: 400, marginLeft: '6px' }}>AI suggested</span>}
                 </label>
                 <select
                   value={priority}

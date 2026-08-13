@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -91,7 +90,9 @@ const TeamPage = () => {
             color: 'var(--text-muted)',
           }}
         >
-          <div style={{ fontSize: '40px', marginBottom: '14px' }}>🔍</div>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--inset)', margin: '0 auto 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
           <p>We couldn't find this team. It may have been removed.</p>
           <button
             className="btn btn-primary"
@@ -109,7 +110,9 @@ const TeamPage = () => {
     'member';
 
   const taskCount = tasks.length;
+  const inProgressCount = tasks.filter((t) => t.status === 'inprogress').length;
   const doneCount = tasks.filter((t) => t.status === 'done').length;
+  const completionPct = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -121,7 +124,8 @@ const TeamPage = () => {
           className="btn btn-secondary btn-sm"
           onClick={() => navigate('/dashboard')}
         >
-          ← Back
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back
         </button>
       </TopBar>
 
@@ -136,106 +140,51 @@ const TeamPage = () => {
             flexWrap: 'wrap',
           }}
         >
-          <div
-            className="card slide-up"
-            style={{
-              padding: '18px 22px',
-              flex: '1 1 auto',
-              minWidth: '140px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-            }}
-          >
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: 'var(--r-md)',
-                background: 'var(--primary-soft)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+          <div className="card stat-card slide-up">
+            <div className="stat-icon" style={{ background: 'var(--warning-bg)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
             </div>
             <div>
-              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
-                {taskCount}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '3px' }}>
-                Total tasks
-              </div>
+              <div className="stat-value">{inProgressCount}</div>
+              <div className="stat-label">In Progress</div>
             </div>
           </div>
 
-          <div
-            className="card slide-up"
-            style={{
-              padding: '18px 22px',
-              flex: '1 1 auto',
-              minWidth: '140px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              animationDelay: '60ms',
-            }}
-          >
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: 'var(--r-md)',
-                background: 'var(--success-bg)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+          <div className="card stat-card slide-up" style={{ animationDelay: '60ms' }}>
+            <div className="stat-icon" style={{ background: 'var(--success-bg)' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <div>
-              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
-                {doneCount}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '3px' }}>
-                Completed
-              </div>
+              <div className="stat-value">{doneCount}</div>
+              <div className="stat-label">Completed</div>
             </div>
           </div>
 
-          <div
-            className="card slide-up"
-            style={{
-              padding: '18px 22px',
-              flex: '1 1 auto',
-              minWidth: '140px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              animationDelay: '120ms',
-            }}
-          >
-            <div
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: 'var(--r-md)',
-                background: 'var(--warning-bg)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div className="card stat-card slide-up" style={{ animationDelay: '120ms' }}>
+            <div className="stat-icon" style={{ background: 'var(--primary-soft)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div>
-              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
-                {team.members.length}
+              <div className="stat-value">{team.members.length}</div>
+              <div className="stat-label">Members</div>
+            </div>
+          </div>
+
+          {/* Completion progress card */}
+          <div className="card stat-card slide-up" style={{ animationDelay: '180ms', flex: '2 1 240px' }}>
+            <div className="stat-icon" style={{ background: 'var(--ai-soft)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ai)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <div className="stat-value">{completionPct}%</div>
+                <div className="stat-label" style={{ marginTop: 0 }}>Complete</div>
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '3px' }}>
-                Members
+              <div className="progress-track" style={{ marginTop: '8px' }}>
+                <div
+                  className="progress-fill"
+                  style={{ width: `${completionPct}%` }}
+                />
               </div>
             </div>
           </div>
@@ -247,13 +196,15 @@ const TeamPage = () => {
             className={`tab ${activeTab === 'kanban' ? 'active' : ''}`}
             onClick={() => setSearchParams({ tab: 'kanban' })}
           >
-            ▦ Board
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            Board
           </button>
           <button
             className={`tab ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setSearchParams({ tab: 'chat' })}
           >
-            💬 Chat
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat
           </button>
         </div>
 

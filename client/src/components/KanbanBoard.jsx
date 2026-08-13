@@ -8,6 +8,12 @@ import TaskModal from './TaskModal';
 import TaskDetailModal from './TaskDetailModal';
 import { columnStyles } from '../styles/theme';
 
+const COLUMN_ICONS = {
+  todo: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/></svg>,
+  inprogress: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>,
+  done: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+};
+
 const COLUMNS = [
   { id: 'todo', label: 'To Do' },
   { id: 'inprogress', label: 'In Progress' },
@@ -70,12 +76,16 @@ const KanbanBoard = ({ tasks, setTasks, teamId, members, myRole }) => {
   return (
     <div>
       {myRole === 'owner' && (
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+            Drag cards across columns to update status
+          </p>
           <button
             onClick={() => setShowCreateModal(true)}
             className="btn btn-primary"
           >
-            + Add Task
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Task
           </button>
         </div>
       )}
@@ -94,56 +104,20 @@ const KanbanBoard = ({ tasks, setTasks, teamId, members, myRole }) => {
             return (
               <div
                 key={col.id}
-                style={{
-                  background: colStyle.bg,
-                  borderRadius: 'var(--r-lg)',
-                  padding: '18px 16px',
-                  minHeight: '420px',
-                  border: '1px solid var(--border-soft)',
-                }}
+                className="kanban-col"
+                style={{ background: colStyle.bg }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '14px',
-                    padding: '0 4px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        background: colStyle.dot,
-                      }}
-                    />
-                    <h3
-                      style={{
-                        fontSize: '13.5px',
-                        fontWeight: 700,
-                        color: colStyle.accent || 'var(--text)',
-                        letterSpacing: '-0.005em',
-                      }}
-                    >
+                <div className="kanban-col-head">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: colStyle.accent || 'var(--text)' }}>
+                    {COLUMN_ICONS[col.id]}
+                    <h3 style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '-0.005em' }}>
                       {col.label}
                     </h3>
                   </div>
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      color: 'var(--text-muted)',
-                      background: 'var(--surface)',
-                      padding: '2px 10px',
-                      borderRadius: 'var(--r-pill)',
-                  }}
-                >
-                  {colTasks.length}
-                </span>
-              </div>
+                  <span className="kanban-col-count">
+                    {colTasks.length}
+                  </span>
+                </div>
 
                 <Droppable droppableId={col.id}>
                   {(provided, snapshot) => (
@@ -182,16 +156,7 @@ const KanbanBoard = ({ tasks, setTasks, teamId, members, myRole }) => {
                       ))}
                       {provided.placeholder}
                       {colTasks.length === 0 && !snapshot.isDraggingOver && (
-                        <div
-                          style={{
-                            textAlign: 'center',
-                            color: 'var(--text-faint)',
-                            fontSize: '12px',
-                            padding: '32px 12px',
-                            borderRadius: 'var(--r-md)',
-                            border: '1px dashed var(--border)',
-                          }}
-                        >
+                        <div className="kanban-empty">
                           Drop tasks here
                         </div>
                       )}
