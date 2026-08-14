@@ -149,7 +149,7 @@ const AuthBrand = () => (
         color: 'rgba(255,255,255,0.4)',
       }}
     >
-      Trusted by modern freelance collectives
+      © 2026 TeamFlow
     </div>
   </div>
 );

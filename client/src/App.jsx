@@ -5,10 +5,11 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import TeamPage from './pages/TeamPage';
+import AppLayout from './components/AppLayout';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  return user ? <AppLayout>{children}</AppLayout> : <Navigate to="/login" />;
 };
 
 function App() {

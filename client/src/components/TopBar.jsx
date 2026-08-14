@@ -49,21 +49,6 @@ const TopBar = ({ title, subtitle, children }) => {
         transition: 'background 0.25s ease, border-color 0.25s ease',
       }}
     >
-      {/* Logo */}
-      <button
-        className="btn-icon"
-        onClick={() => navigate('/dashboard')}
-        aria-label="Dashboard"
-        style={{
-          width: '42px',
-          height: '42px',
-          borderRadius: '13px',
-          flexShrink: 0,
-        }}
-      >
-        <Logo size={30} />
-      </button>
-
       {/* Page Title */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {title && (
