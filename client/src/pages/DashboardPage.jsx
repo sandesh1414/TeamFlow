@@ -166,7 +166,7 @@ const DashboardPage = () => {
                   <div
                     key={team._id}
                     className="card card-hover"
-                    onClick={() => navigate(`/team/${team._id}`)}
+                    onClick={() => navigate(`/team/${team._id}/board`)}
                     style={{
                       padding: '22px 24px',
                       cursor: 'pointer',

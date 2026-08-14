@@ -445,8 +445,21 @@ textarea.field { resize: vertical; line-height: 1.5; }
   flex-direction: column;
   gap: 3px;
   flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
 }
 
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+/* Top-level nav item (Dashboard) */
 .sidebar-nav-item {
   display: flex;
   align-items: center;
@@ -497,6 +510,171 @@ textarea.field { resize: vertical; line-height: 1.5; }
   height: 20px;
   border-radius: 0 3px 3px 0;
   background: var(--primary);
+}
+
+/* Section label */
+.sidebar-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+.sidebar-section-label svg {
+  opacity: 0.5;
+}
+
+/* Teams list */
+.sidebar-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-teams-empty {
+  padding: 8px 12px 8px 30px;
+  font-size: 12.5px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* Team header row */
+.sidebar-team-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sidebar-team-header:hover {
+  background: var(--inset);
+}
+
+.sidebar-team-active {
+  background: var(--inset);
+  color: var(--text);
+}
+
+.sidebar-team-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.sidebar-team-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Expandable sub-navigation */
+.sidebar-subnav {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.22s var(--ease);
+}
+
+.sidebar-subnav-open {
+  max-height: 80px;
+}
+
+.sidebar-subnav-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 0 5px 30px;
+  position: relative;
+}
+
+.sidebar-subnav-inner::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 0;
+  bottom: 5px;
+  width: 1.5px;
+  background: var(--border-strong);
+  border-radius: 1px;
+}
+
+.sidebar-subnav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 10px 6px 14px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  text-align: left;
+  position: relative;
+  white-space: nowrap;
+}
+
+.sidebar-subnav-item::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 1.5px;
+  background: var(--border-strong);
+}
+
+.sidebar-subnav-item:hover {
+  background: var(--inset);
+  color: var(--text-body);
+}
+
+.sidebar-subnav-active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.sidebar-subnav-active:hover {
+  background: var(--primary-softer);
+  color: var(--primary);
+}
+
+.sidebar-subnav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .sidebar-bottom {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import KanbanBoard from '../components/KanbanBoard';
@@ -12,11 +12,12 @@ const TeamPage = () => {
   const [team, setTeam] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'kanban';
   const { user } = useAuth();
   const navigate = useNavigate();
   const config = { headers: { Authorization: `Bearer ${user.token}` } };
+
+  // Determine view from the URL pathname
+  const view = window.location.pathname.endsWith('/chat') ? 'chat' : 'board';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,12 +115,13 @@ const TeamPage = () => {
   const doneCount = tasks.filter((t) => t.status === 'done').length;
   const completionPct = taskCount > 0 ? Math.round((doneCount / taskCount) * 100) : 0;
 
+  const subtitle = view === 'chat'
+    ? `${team.members.length} members · Team chat`
+    : `${team.members.length} members · Invite code ${team.inviteCode}`;
+
   return (
     <div style={{ minHeight: '100vh' }}>
-      <TopBar
-        title={team.name}
-        subtitle={`${team.members.length} members · Invite code ${team.inviteCode}`}
-      >
+      <TopBar title={team.name} subtitle={subtitle}>
         <button
           className="btn btn-secondary btn-sm"
           onClick={() => navigate('/dashboard')}
@@ -130,95 +132,79 @@ const TeamPage = () => {
       </TopBar>
 
       <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '24px 32px' }}>
-        {/* Stats bar */}
-        <div
-          className="stagger"
-          style={{
-            display: 'flex',
-            gap: '16px',
-            marginBottom: '28px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div className="card stat-card slide-up">
-            <div className="stat-icon" style={{ background: 'var(--warning-bg)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-            </div>
-            <div>
-              <div className="stat-value">{inProgressCount}</div>
-              <div className="stat-label">In Progress</div>
-            </div>
-          </div>
-
-          <div className="card stat-card slide-up" style={{ animationDelay: '60ms' }}>
-            <div className="stat-icon" style={{ background: 'var(--success-bg)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div>
-              <div className="stat-value">{doneCount}</div>
-              <div className="stat-label">Completed</div>
-            </div>
-          </div>
-
-          <div className="card stat-card slide-up" style={{ animationDelay: '120ms' }}>
-            <div className="stat-icon" style={{ background: 'var(--primary-soft)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div>
-              <div className="stat-value">{team.members.length}</div>
-              <div className="stat-label">Members</div>
-            </div>
-          </div>
-
-          {/* Completion progress card */}
-          <div className="card stat-card slide-up" style={{ animationDelay: '180ms', flex: '2 1 240px' }}>
-            <div className="stat-icon" style={{ background: 'var(--ai-soft)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ai)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <div className="stat-value">{completionPct}%</div>
-                <div className="stat-label" style={{ marginTop: 0 }}>Complete</div>
+        {view === 'board' && (
+          <>
+            {/* Stats bar */}
+            <div
+              className="stagger"
+              style={{
+                display: 'flex',
+                gap: '16px',
+                marginBottom: '28px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div className="card stat-card slide-up">
+                <div className="stat-icon" style={{ background: 'var(--warning-bg)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </div>
+                <div>
+                  <div className="stat-value">{inProgressCount}</div>
+                  <div className="stat-label">In Progress</div>
+                </div>
               </div>
-              <div className="progress-track" style={{ marginTop: '8px' }}>
-                <div
-                  className="progress-fill"
-                  style={{ width: `${completionPct}%` }}
-                />
+
+              <div className="card stat-card slide-up" style={{ animationDelay: '60ms' }}>
+                <div className="stat-icon" style={{ background: 'var(--success-bg)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div className="stat-value">{doneCount}</div>
+                  <div className="stat-label">Completed</div>
+                </div>
+              </div>
+
+              <div className="card stat-card slide-up" style={{ animationDelay: '120ms' }}>
+                <div className="stat-icon" style={{ background: 'var(--primary-soft)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div className="stat-value">{team.members.length}</div>
+                  <div className="stat-label">Members</div>
+                </div>
+              </div>
+
+              {/* Completion progress card */}
+              <div className="card stat-card slide-up" style={{ animationDelay: '180ms', flex: '2 1 240px' }}>
+                <div className="stat-icon" style={{ background: 'var(--ai-soft)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ai)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                    <div className="stat-value">{completionPct}%</div>
+                    <div className="stat-label" style={{ marginTop: 0 }}>Complete</div>
+                  </div>
+                  <div className="progress-track" style={{ marginTop: '8px' }}>
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${completionPct}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="tabs" style={{ marginBottom: '24px' }}>
-          <button
-            className={`tab ${activeTab === 'kanban' ? 'active' : ''}`}
-            onClick={() => setSearchParams({ tab: 'kanban' })}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-            Board
-          </button>
-          <button
-            className={`tab ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setSearchParams({ tab: 'chat' })}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Chat
-          </button>
-        </div>
-
-        {activeTab === 'kanban' ? (
-          <KanbanBoard
-            tasks={tasks}
-            setTasks={setTasks}
-            teamId={teamId}
-            members={team.members}
-            myRole={myRole}
-          />
-        ) : (
-          <ChatRoom teamId={teamId} />
+            <KanbanBoard
+              tasks={tasks}
+              setTasks={setTasks}
+              teamId={teamId}
+              members={team.members}
+              myRole={myRole}
+            />
+          </>
         )}
+
+        {view === 'chat' && <ChatRoom teamId={teamId} />}
       </div>
     </div>
   );

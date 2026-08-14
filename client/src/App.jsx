@@ -21,6 +21,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/team/:teamId" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+          <Route path="/team/:teamId/board" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+          <Route path="/team/:teamId/chat" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
