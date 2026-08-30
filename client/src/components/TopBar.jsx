@@ -1,12 +1,10 @@
+```jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
-import Logo from './Logo';
 
 const TopBar = ({ title, subtitle, children }) => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -38,10 +36,14 @@ const TopBar = ({ title, subtitle, children }) => {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: scrolled ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.6)',
+        background: scrolled
+          ? 'rgba(255, 255, 255, 0.85)'
+          : 'rgba(255, 255, 255, 0.6)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+        borderBottom: scrolled
+          ? '1px solid var(--border)'
+          : '1px solid transparent',
         padding: '14px 32px',
         display: 'flex',
         alignItems: 'center',
@@ -67,6 +69,7 @@ const TopBar = ({ title, subtitle, children }) => {
             {title}
           </div>
         )}
+
         {subtitle && (
           <div
             style={{
@@ -119,23 +122,48 @@ const TopBar = ({ title, subtitle, children }) => {
           >
             <span
               className="avatar"
-              style={{ width: '30px', height: '30px', fontSize: '12px' }}
+              style={{
+                width: '30px',
+                height: '30px',
+                fontSize: '12px',
+              }}
             >
               {initial}
             </span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-body)' }}>
+
+            <span
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: 'var(--text-body)',
+              }}
+            >
               {user?.name?.split(' ')[0]}
             </span>
+
             <span
               style={{
                 fontSize: '10px',
                 color: 'var(--text-muted)',
                 marginLeft: '2px',
-                transform: showProfileMenu ? 'rotate(180deg)' : 'rotate(0deg)',
+                transform: showProfileMenu
+                  ? 'rotate(180deg)'
+                  : 'rotate(0deg)',
                 transition: 'transform 0.2s ease',
               }}
             >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showProfileMenu ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}><polyline points="6 9 12 15 18 9"/></svg>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </span>
           </button>
 
@@ -162,9 +190,16 @@ const TopBar = ({ title, subtitle, children }) => {
                   marginBottom: '5px',
                 }}
               >
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
+                <div
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: 'var(--text)',
+                  }}
+                >
                   {user?.name}
                 </div>
+
                 <div
                   style={{
                     fontSize: '11px',
@@ -196,8 +231,12 @@ const TopBar = ({ title, subtitle, children }) => {
                   fontWeight: 600,
                   transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--error-bg)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = 'var(--error-bg)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = 'transparent')
+                }
               >
                 Log out
               </button>
@@ -210,3 +249,4 @@ const TopBar = ({ title, subtitle, children }) => {
 };
 
 export default TopBar;
+```
