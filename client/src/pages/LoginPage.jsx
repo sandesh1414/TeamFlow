@@ -266,4 +266,4 @@ const LoginPage = () => {
   );
 };
 
-export default api;
+export default LoginPage;
