@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -176,7 +176,7 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await axios.post('/api/auth/login', { email, password });
+      const { data } = await api.post('/api/auth/login', { email, password });
       login(data);
       navigate('/dashboard');
     } catch (err) {
