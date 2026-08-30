@@ -1,4 +1,4 @@
-```jsx
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';
@@ -249,4 +249,3 @@ const TopBar = ({ title, subtitle, children }) => {
 };
 
 export default TopBar;
-```
