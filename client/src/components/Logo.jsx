@@ -12,3 +12,4 @@ const Logo = ({ size = 36, light = false }) => {
 };
 
 export default Logo;
+

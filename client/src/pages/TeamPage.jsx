@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import KanbanBoard from '../components/KanbanBoard';
 import ChatRoom from '../components/ChatRoom';
@@ -23,8 +23,8 @@ const TeamPage = () => {
     const fetchData = async () => {
       try {
         const [teamsRes, tasksRes] = await Promise.all([
-          axios.get('/api/teams/mine', config),
-          axios.get(`/api/tasks/${teamId}`, config),
+          api.get('/api/teams/mine', config),
+          api.get(`/api/tasks/${teamId}`, config),
         ]);
         const thisTeam = teamsRes.data.find((t) => t._id.toString() === teamId.toString());
         setTeam(thisTeam);
@@ -211,3 +211,5 @@ const TeamPage = () => {
 };
 
 export default TeamPage;
+
+

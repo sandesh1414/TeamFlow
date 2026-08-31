@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
@@ -21,7 +21,7 @@ const NotificationBell = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const { data } = await axios.get('/api/notifications', {
+        const { data } = await api.get('/api/notifications', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setNotifications(data);
@@ -56,7 +56,7 @@ const NotificationBell = () => {
   const handleNotificationClick = async (notif) => {
     try {
       if (!notif.read) {
-        await axios.put(`/api/notifications/${notif._id}`, {}, config);
+        await api.put(`/api/notifications/${notif._id}`, {}, config);
         setNotifications((prev) =>
           prev.map((n) => (n._id === notif._id ? { ...n, read: true } : n))
         );
@@ -70,7 +70,7 @@ const NotificationBell = () => {
 
   const handleMarkAllRead = async () => {
     try {
-      await axios.put('/api/notifications/read-all', {}, config);
+      await api.put('/api/notifications/read-all', {}, config);
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error(err);
@@ -266,3 +266,5 @@ const NotificationBell = () => {
 };
 
 export default NotificationBell;
+
+

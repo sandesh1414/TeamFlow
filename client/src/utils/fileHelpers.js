@@ -16,3 +16,4 @@ export const formatFileSize = (bytes) => {
 };
 
 export const isImage = (mimetype) => mimetype?.startsWith('image/');
+

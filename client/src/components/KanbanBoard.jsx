@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
@@ -44,7 +44,7 @@ const KanbanBoard = ({ tasks, setTasks, teamId, members, myRole }) => {
 
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`/api/tasks/${draggableId}`, { status: newStatus }, config);
+      await api.put(`/api/tasks/${draggableId}`, { status: newStatus }, config);
     } catch (err) {
       console.error('Failed to update task status', err);
       setTasks((prev) =>
@@ -191,3 +191,5 @@ const KanbanBoard = ({ tasks, setTasks, teamId, members, myRole }) => {
 };
 
 export default KanbanBoard;
+
+

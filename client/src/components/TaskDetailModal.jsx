@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { priorityStyles } from '../styles/theme';
 import { avatarGradient } from '../styles/theme';
@@ -13,7 +13,7 @@ const AssignDropdown = ({ task, config, onTaskUpdated }) => {
   const handleOpen = async () => {
     if (members.length > 0) { setAssigning(true); return; }
     try {
-      const { data } = await axios.get('/api/teams/mine', config);
+      const { data } = await api.get('/api/teams/mine', config);
       const team = data.find((t) => t._id === task.team?.toString() || t._id === task.team);
       if (team) setMembers(team.members);
       setAssigning(true);
@@ -25,7 +25,7 @@ const AssignDropdown = ({ task, config, onTaskUpdated }) => {
   const handleAssign = async (userId) => {
     if (!userId) return;
     try {
-      const { data } = await axios.put(`/api/tasks/${task._id}`, { assignedTo: userId }, config);
+      const { data } = await api.put(`/api/tasks/${task._id}`, { assignedTo: userId }, config);
       onTaskUpdated(data);
     } catch (err) {
       console.error(err);
@@ -76,7 +76,7 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, onTaskDeleted, myRole }
     }
     setSubmitting(true);
     try {
-      const { data } = await axios.post(`/api/tasks/${task._id}/comment`, { text: commentText }, config);
+      const { data } = await api.post(`/api/tasks/${task._id}/comment`, { text: commentText }, config);
       onTaskUpdated(data);
       setCommentText('');
     } catch (err) {
@@ -89,7 +89,7 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, onTaskDeleted, myRole }
   const handleDelete = async () => {
     if (!window.confirm('Delete this task? This cannot be undone.')) return;
     try {
-      await axios.delete(`/api/tasks/${task._id}`, config);
+      await api.delete(`/api/tasks/${task._id}`, config);
       onTaskDeleted(task._id);
       onClose();
     } catch (err) {
@@ -101,7 +101,7 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, onTaskDeleted, myRole }
     setSummarizing(true);
     setSummary('');
     try {
-      const { data } = await axios.post(`/api/ai/summarize/${task._id}`, {}, config);
+      const { data } = await api.post(`/api/ai/summarize/${task._id}`, {}, config);
       setSummary(data.summary);
     } catch (err) {
       setSummary('Failed to generate summary. Please try again.');
@@ -112,7 +112,7 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, onTaskDeleted, myRole }
 
   const handleFileUploaded = async (fileData) => {
     try {
-      const { data } = await axios.post(`/api/tasks/${task._id}/attach`, fileData, config);
+      const { data } = await api.post(`/api/tasks/${task._id}/attach`, fileData, config);
       onTaskUpdated(data);
     } catch (err) {
       console.error('Failed to attach file:', err);
@@ -354,3 +354,5 @@ const TaskDetailModal = ({ task, onClose, onTaskUpdated, onTaskDeleted, myRole }
 };
 
 export default TaskDetailModal;
+
+

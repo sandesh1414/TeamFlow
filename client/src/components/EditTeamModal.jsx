@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const EditTeamModal = ({ team, onClose, onTeamUpdated }) => {
@@ -18,7 +18,7 @@ const EditTeamModal = ({ team, onClose, onTeamUpdated }) => {
     setError('');
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const response = await axios.put(`/api/teams/${team._id}`, { name: name.trim(), description: description.trim() }, config);
+      const response = await api.put(`/api/teams/${team._id}`, { name: name.trim(), description: description.trim() }, config);
       onTeamUpdated(response.data);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to update team');
@@ -98,3 +98,5 @@ const EditTeamModal = ({ team, onClose, onTeamUpdated }) => {
 };
 
 export default EditTeamModal;
+
+

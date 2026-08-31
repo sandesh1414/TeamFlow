@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const CreateTeamModal = ({ onClose, onTeamCreated }) => {
@@ -19,7 +19,7 @@ const CreateTeamModal = ({ onClose, onTeamCreated }) => {
     setError('');
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.post('/api/teams/create', { name, description }, config);
+      const { data } = await api.post('/api/teams/create', { name, description }, config);
       onTeamCreated(data);
       onClose();
     } catch (err) {
@@ -64,3 +64,5 @@ const CreateTeamModal = ({ onClose, onTeamCreated }) => {
 };
 
 export default CreateTeamModal;
+
+

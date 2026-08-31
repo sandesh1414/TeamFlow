@@ -28,3 +28,4 @@ export const avatarGradient = (seed) => {
   const idx = seed ? String(seed).split('').reduce((a, c) => a + c.charCodeAt(0), 0) % gradients.length : 0;
   return gradients[idx];
 };
+

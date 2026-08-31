@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import { avatarGradient } from '../styles/theme';
@@ -76,7 +76,7 @@ const Sidebar = () => {
     const fetchTeams = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const { data } = await axios.get('/api/teams/mine', config);
+        const { data } = await api.get('/api/teams/mine', config);
         setTeams(data);
       } catch (err) {
         console.error('Failed to fetch teams', err);
@@ -281,3 +281,5 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+

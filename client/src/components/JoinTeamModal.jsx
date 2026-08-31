@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const JoinTeamModal = ({ onClose, onTeamJoined }) => {
@@ -17,7 +17,7 @@ const JoinTeamModal = ({ onClose, onTeamJoined }) => {
     setError('');
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.post('/api/teams/join', { inviteCode }, config);
+      const { data } = await api.post('/api/teams/join', { inviteCode }, config);
       onTeamJoined(data);
       onClose();
     } catch (err) {
@@ -71,3 +71,5 @@ const JoinTeamModal = ({ onClose, onTeamJoined }) => {
 };
 
 export default JoinTeamModal;
+
+

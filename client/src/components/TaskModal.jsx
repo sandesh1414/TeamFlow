@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
@@ -24,7 +24,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
       setAiPriorityLoading(true);
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const { data } = await axios.post('/api/ai/priority', { title, description }, config);
+        const { data } = await api.post('/api/ai/priority', { title, description }, config);
         setPriority(data.priority);
         setPrioritySetByAI(true);
       } catch (err) {
@@ -50,7 +50,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
     if (title.trim().length > 100) { setError('Title is too long (max 100 characters)'); return; }
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `/api/tasks/${teamId}`,
         { title, description, assignedTo: assignedTo || null, dueDate: dueDate || null, priority },
         config
@@ -68,7 +68,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
     setSplitResult(null);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.post(`/api/ai/split/${teamId}`, { taskTitle: title }, config);
+      const { data } = await api.post(`/api/ai/split/${teamId}`, { taskTitle: title }, config);
       setSplitResult(data);
       data.tasks.forEach((task) => onTaskCreated(task));
     } catch (err) {
@@ -83,7 +83,7 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const updates = Object.entries(splitAssignments)
         .filter(([taskId, userId]) => userId)
-        .map(([taskId, userId]) => axios.put(`/api/tasks/${taskId}`, { assignedTo: userId }, config));
+        .map(([taskId, userId]) => api.put(`/api/tasks/${taskId}`, { assignedTo: userId }, config));
       await Promise.all(updates);
     } catch (err) {
       console.error('Failed to assign tasks:', err);
@@ -286,3 +286,5 @@ const TaskModal = ({ teamId, members, onClose, onTaskCreated }) => {
 };
 
 export default TaskModal;
+
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ const DashboardPage = () => {
     const fetchMyTeams = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const { data } = await axios.get('/api/teams/mine', config);
+        const { data } = await api.get('/api/teams/mine', config);
         setTeams(data);
       } catch (err) {
         console.error('Failed to fetch teams', err);
@@ -374,3 +374,5 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+

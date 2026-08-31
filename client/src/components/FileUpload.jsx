@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useRef } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const FileUpload = ({ onUploadComplete, compact = false }) => {
@@ -33,7 +33,7 @@ const FileUpload = ({ onUploadComplete, compact = false }) => {
         },
       };
 
-      const { data } = await axios.post('/api/upload', formData, config);
+      const { data } = await api.post('/api/upload', formData, config);
       onUploadComplete(data);
     } catch (err) {
       console.error('Upload failed:', err);
@@ -79,3 +79,5 @@ const FileUpload = ({ onUploadComplete, compact = false }) => {
 };
 
 export default FileUpload;
+
+
