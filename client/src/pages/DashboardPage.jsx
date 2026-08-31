@@ -23,8 +23,8 @@ const DashboardPage = () => {
     const fetchMyTeams = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const { data } = await api.get('/api/teams/mine', config);
-        setTeams(data);
+const { data } = await api.get('/api/teams/mine', config);
+setTeams(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Failed to fetch teams', err);
       } finally {
