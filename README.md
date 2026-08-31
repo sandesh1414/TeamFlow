@@ -165,10 +165,3 @@ Authentication is handled using JWT tokens. Passwords are securely hashed using 
 ## AI Integration
 
 The backend includes integrations with Google Gemini and Groq for AI-related functionality within the application.
-
-
-**Sandesh Keralikar**
-
-Information Technology, NITK Surathkal
-
-GitHub: https://github.com/sandesh1414
