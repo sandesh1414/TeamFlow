@@ -167,17 +167,6 @@ Authentication is handled using JWT tokens. Passwords are securely hashed using 
 
 The backend includes integrations with Google Gemini and Groq for AI-related functionality within the application.
 
-## Future Improvements
-
-* Improve project analytics
-* Add email notifications
-* Add calendar integration
-* Expand role-based permissions
-* Improve mobile support
-* Add automated testing
-* Add CI/CD
-
-## Author
 
 **Sandesh Keralikar**
 
