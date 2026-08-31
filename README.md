@@ -3,7 +3,6 @@
 TeamFlow is a full-stack team collaboration and project management platform. It provides a workspace where teams can manage projects and tasks, communicate in real time, and collaborate from a single application.
 
 **Live Demo:** https://team-flow-dun.vercel.app
-**Repository:** https://github.com/sandesh1414/TeamFlow
 
 ## Features
 
